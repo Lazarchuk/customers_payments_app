@@ -12,12 +12,12 @@ import javax.persistence.*;
 import java.util.List;
 
 @Entity
-@Table(name = "customers")
+@Table(name = "clients")
 @Getter
 @Setter
 @NoArgsConstructor
 @ToString
-public class Customer {
+public class Client {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "client_id", nullable = false)
@@ -32,5 +32,10 @@ public class Customer {
     private String lastName;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Account> accounts;
+
+    /*@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<Payment> payments;*/
 }

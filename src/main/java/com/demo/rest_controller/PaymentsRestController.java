@@ -1,6 +1,8 @@
 package com.demo.rest_controller;
 
+import com.demo.model.Account;
 import com.demo.model.Payment;
+import com.demo.repository.AccountRepository;
 import com.demo.repository.PaymentRepository;
 import com.demo.response_entity.CreatedPaymentResponse;
 import com.demo.response_entity.MultiplePaymentsResponse;
@@ -22,10 +24,12 @@ import java.util.List;
 @RequestMapping("/rest/v1/payments")
 public class PaymentsRestController {
     private PaymentRepository repository;
+    private AccountRepository accRepository;
     private PaymentService service;
 
-    public PaymentsRestController(PaymentRepository repository, PaymentService service) {
+    public PaymentsRestController(PaymentRepository repository, AccountRepository accRepository, PaymentService service) {
         this.repository = repository;
+        this.accRepository = accRepository;
         this.service = service;
     }
 
@@ -39,6 +43,12 @@ public class PaymentsRestController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
+        Account account = accRepository.findById(requestPayment.getSourceAccount()).orElse(null);
+        if (account == null){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        requestPayment.setAccount(account);
         Payment persistedPayment = repository.save(requestPayment);
         CreatedPaymentResponse paymentResponse = new CreatedPaymentResponse();
         paymentResponse.setPaymentId(persistedPayment.getPaymentId());

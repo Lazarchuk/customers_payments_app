@@ -1,8 +1,8 @@
 package com.demo.controller;
 
 import com.demo.model.Account;
-import com.demo.model.Customer;
-import com.demo.rest_controller.CustomersRestController;
+import com.demo.model.Client;
+import com.demo.rest_controller.ClientsRestController;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,11 +17,11 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/view/customers")
-public class CustomerController {
-    private CustomersRestController customersRestController;
+public class ClientController {
+    private ClientsRestController clientsRestController;
 
-    public CustomerController(CustomersRestController customersRestController) {
-        this.customersRestController = customersRestController;
+    public ClientController(ClientsRestController clientsRestController) {
+        this.clientsRestController = clientsRestController;
     }
 
     @RequestMapping(value = "", method = RequestMethod.GET)
@@ -33,7 +33,7 @@ public class CustomerController {
     @ResponseBody
     public ResponseEntity<List<Account>> createCustomer(@RequestParam("customerName") String name){
         System.out.println(name);
-        Customer customer = new Customer();
+        Client customer = new Client();
         customer.setFirstName(name);
         customer.setLastName("Yohanson");
 
@@ -45,7 +45,7 @@ public class CustomerController {
         accounts.add(account);
         customer.setAccounts(accounts);
 
-        ResponseEntity responseEntity = customersRestController.saveCustomer(customer);
+        ResponseEntity responseEntity = clientsRestController.saveCustomer(customer);
         return responseEntity;
     }
 }

@@ -8,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class CreatedCustomerResponse {
+public class CreatedClientResponse {
     @JsonProperty("client_id")
     private Integer clientId;
 }

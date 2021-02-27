@@ -38,5 +38,14 @@ public class Payment {
 
     @Column(name = "reason", nullable = false)
     private String reason;
-    
+
+    /*@ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "client_id")
+    @JsonIgnore
+    private Client client;*/
+
+    @ManyToOne
+    @JoinColumn(name = "account_id")
+    @JsonIgnore
+    private Account account;
 }

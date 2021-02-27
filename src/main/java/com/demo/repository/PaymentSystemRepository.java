@@ -1,6 +1,6 @@
 package com.demo.repository;
 
-import com.demo.model.Customer;
+import com.demo.model.Client;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,13 +14,13 @@ public class PaymentSystemRepository {
     private EntityManager entityManager;
 
     @Transactional
-    public void insertCustomer(Customer customer){
+    public void insertCustomer(Client customer){
         entityManager.persist(customer);
         entityManager.merge(customer);
     }
 
     @Transactional
-    public Customer findCustomerById(Integer id){
-        return entityManager.find(Customer.class, id);
+    public Client findCustomerById(Integer id){
+        return entityManager.find(Client.class, id);
     }
 }
