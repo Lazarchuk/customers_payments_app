@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Controller
-@RequestMapping("/view/customers")
+@RequestMapping("/view/clients")
 public class ClientController {
     private ClientsRestController clientsRestController;
 
@@ -31,11 +31,11 @@ public class ClientController {
 
     @RequestMapping(value = "/create", method = RequestMethod.POST, params = "customerName")
     @ResponseBody
-    public ResponseEntity<List<Account>> createCustomer(@RequestParam("customerName") String name){
+    public ResponseEntity<List<Account>> createClient(@RequestParam("customerName") String name){
         System.out.println(name);
-        Client customer = new Client();
-        customer.setFirstName(name);
-        customer.setLastName("Yohanson");
+        Client client = new Client();
+        client.setFirstName(name);
+        client.setLastName("Yohanson");
 
         Account account = new Account();
         account.setAccountNumber("654984263");
@@ -43,9 +43,9 @@ public class ClientController {
         account.setBalance(new BigDecimal(9900.00));
         List<Account> accounts = new ArrayList<>();
         accounts.add(account);
-        customer.setAccounts(accounts);
+        client.setAccounts(accounts);
 
-        ResponseEntity responseEntity = clientsRestController.saveCustomer(customer);
+        ResponseEntity responseEntity = clientsRestController.saveClient(client);
         return responseEntity;
     }
 }

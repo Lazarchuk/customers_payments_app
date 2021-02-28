@@ -1,7 +1,6 @@
 package com.demo.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,9 +14,7 @@ import java.math.BigDecimal;
 @Table(name = "payments")
 @Getter
 @Setter
-@ToString
 @NoArgsConstructor
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Payment {
 
     @Id
@@ -38,14 +35,4 @@ public class Payment {
 
     @Column(name = "reason", nullable = false)
     private String reason;
-
-    /*@ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "client_id")
-    @JsonIgnore
-    private Client client;*/
-
-    @ManyToOne
-    @JoinColumn(name = "account_id")
-    @JsonIgnore
-    private Account account;
 }

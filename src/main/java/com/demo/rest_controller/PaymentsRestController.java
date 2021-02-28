@@ -23,13 +23,13 @@ import java.util.List;
 @RestController
 @RequestMapping("/rest/v1/payments")
 public class PaymentsRestController {
-    private PaymentRepository repository;
-    private AccountRepository accRepository;
+    private PaymentRepository paymentRepository;
+    private AccountRepository accountRepository;
     private PaymentService service;
 
-    public PaymentsRestController(PaymentRepository repository, AccountRepository accRepository, PaymentService service) {
-        this.repository = repository;
-        this.accRepository = accRepository;
+    public PaymentsRestController(PaymentRepository paymentRepository, AccountRepository accountRepository, PaymentService service) {
+        this.paymentRepository = paymentRepository;
+        this.accountRepository = accountRepository;
         this.service = service;
     }
 
@@ -43,13 +43,7 @@ public class PaymentsRestController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        Account account = accRepository.findById(requestPayment.getSourceAccount()).orElse(null);
-        if (account == null){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-
-        requestPayment.setAccount(account);
-        Payment persistedPayment = repository.save(requestPayment);
+        Payment persistedPayment = paymentRepository.save(requestPayment);
         CreatedPaymentResponse paymentResponse = new CreatedPaymentResponse();
         paymentResponse.setPaymentId(persistedPayment.getPaymentId());
 
@@ -69,12 +63,12 @@ public class PaymentsRestController {
      */
     @RequestMapping(value = "createmany", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<MultiplePaymentsResponse>> createPayments(@RequestBody List<Payment> requestPayments){
+        List<MultiplePaymentsResponse> paymentsResponses = new ArrayList<>();
         if (requestPayments == null || requestPayments.isEmpty()){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        List<MultiplePaymentsResponse> paymentsResponses = new ArrayList<>();
 
-        List<Payment> persistedPayments = repository.saveAll(requestPayments);
+        List<Payment> persistedPayments = paymentRepository.saveAll(requestPayments);
 
         for (Payment payment: persistedPayments) {
             try {

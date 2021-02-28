@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.List;
@@ -16,11 +15,12 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-@ToString
+@JsonIgnoreProperties({"hibernateLazyInitializer"})
 public class Client {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "client_id", nullable = false)
+    @JsonIgnore
     private Integer clientId;
 
     @Column(name = "first_name", nullable = false)
@@ -32,10 +32,5 @@ public class Client {
     private String lastName;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JsonIgnore
     private List<Account> accounts;
-
-    /*@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JsonIgnore
-    private List<Payment> payments;*/
 }
