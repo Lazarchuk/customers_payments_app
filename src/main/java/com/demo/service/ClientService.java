@@ -2,6 +2,8 @@ package com.demo.service;
 
 import com.demo.model.Client;
 import com.demo.repository.ClientRepository;
+import com.demo.response_entity.AccountsContainerResponse;
+import com.demo.response_entity.CreatedClientResponse;
 import com.demo.response_entity.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -18,7 +20,7 @@ public class ClientService {
         this.repository = repository;
     }
 
-    public ResponseEntity<?> getClientAccounts(Integer id){
+    public ResponseEntity<?> getClientAccountsJson(Integer id){
         Client client = repository.findById(id).orElse(null);
         if (client == null){
             log.error("Client with id {} not found. LogName \"{}\"", id, log.getName());
@@ -26,5 +28,25 @@ public class ClientService {
         }
 
         return new ResponseEntity<>(client.getAccounts(), HttpStatus.OK);
+    }
+
+    public ResponseEntity<?> getClientAccountsXml(Integer id){
+        Client client = repository.findById(id).orElse(null);
+        if (client == null){
+            log.error("Client with id {} not found. LogName \"{}\"", id, log.getName());
+            return new ResponseEntity<>(new ErrorResponse(HttpStatus.NOT_FOUND.toString(), "Client not found"), HttpStatus.NOT_FOUND);
+        }
+
+        AccountsContainerResponse response = new AccountsContainerResponse();
+        response.setAccounts(client.getAccounts());
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    public ResponseEntity<?> createClient(Client client){
+        client.getAccounts().forEach(acc -> acc.setClient(client));
+
+        Client persistedClient = repository.save(client);
+        return new ResponseEntity<>(new CreatedClientResponse(persistedClient.getClientId()), HttpStatus.CREATED);
     }
 }

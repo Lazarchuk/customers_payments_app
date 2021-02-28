@@ -2,9 +2,8 @@ package com.demo.rest_controller;
 
 import com.demo.model.Client;
 import com.demo.repository.ClientRepository;
-import com.demo.response_entity.AccountsContainerResponse;
-import com.demo.response_entity.CreatedClientResponse;
 import com.demo.response_entity.ErrorResponse;
+import com.demo.service.ClientService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -16,9 +15,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/rest/v1/clients")
 public class ClientsRestController {
     private ClientRepository repository;
+    private ClientService service;
 
-    public ClientsRestController(ClientRepository repository) {
+    public ClientsRestController(ClientRepository repository, ClientService service) {
         this.repository = repository;
+        this.service = service;
     }
 
     @RequestMapping(value = "{id}/json", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -28,13 +29,7 @@ public class ClientsRestController {
             return new ResponseEntity<>(new ErrorResponse(HttpStatus.BAD_REQUEST.toString(), "Input client identifier is null"), HttpStatus.BAD_REQUEST);
         }
 
-        Client client = repository.findById(id).orElse(null);
-        if (client == null){
-            log.error("Client with id {} not found. LogName \"{}\"", id, log.getName());
-            return new ResponseEntity<>(new ErrorResponse(HttpStatus.NOT_FOUND.toString(), "Client not found"), HttpStatus.NOT_FOUND);
-        }
-
-        return new ResponseEntity<>(client.getAccounts(), HttpStatus.OK);
+        return service.getClientAccountsJson(id);
     }
 
     @RequestMapping(value = "{id}/xml", method = RequestMethod.GET, produces = MediaType.APPLICATION_XML_VALUE)
@@ -44,16 +39,7 @@ public class ClientsRestController {
             return new ResponseEntity<>(new ErrorResponse(HttpStatus.BAD_REQUEST.toString(), "Input client identifier is null"), HttpStatus.BAD_REQUEST);
         }
 
-        Client client = repository.findById(id).orElse(null);
-        if (client == null){
-            log.error("Client with id {} not found. LogName \"{}\"", id, log.getName());
-            return new ResponseEntity<>(new ErrorResponse(HttpStatus.NOT_FOUND.toString(), "Client not found"), HttpStatus.NOT_FOUND);
-        }
-
-        AccountsContainerResponse response = new AccountsContainerResponse();
-        response.setAccounts(client.getAccounts());
-
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return service.getClientAccountsXml(id);
     }
 
     @RequestMapping(value = "create/json", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
@@ -63,10 +49,7 @@ public class ClientsRestController {
             return new ResponseEntity<>(new ErrorResponse(HttpStatus.BAD_REQUEST.toString(), "Input client is null"), HttpStatus.BAD_REQUEST);
         }
 
-        client.getAccounts().forEach(acc -> acc.setClient(client));
-
-        Client persistedClient = repository.save(client);
-        return new ResponseEntity<>(new CreatedClientResponse(persistedClient.getClientId()), HttpStatus.CREATED);
+        return service.createClient(client);
     }
 
     @RequestMapping(value = "create/xml", method = RequestMethod.POST, produces = MediaType.APPLICATION_XML_VALUE, consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
@@ -76,10 +59,7 @@ public class ClientsRestController {
             return new ResponseEntity<>(new ErrorResponse(HttpStatus.BAD_REQUEST.toString(), "Input client is null"), HttpStatus.BAD_REQUEST);
         }
 
-        client.getAccounts().forEach(acc -> acc.setClient(client));
-
-        Client persistedClient = repository.save(client);
-        return new ResponseEntity<>(new CreatedClientResponse(persistedClient.getClientId()), HttpStatus.CREATED);
+        return service.createClient(client);
     }
 
 }
