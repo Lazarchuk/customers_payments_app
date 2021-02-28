@@ -23,14 +23,14 @@ public class PaymentsJournalResponse {
     private String destinationAccount;
 
     private BigDecimal amount;
-    private ResponseClient payer;
-    private ResponseClient recipient;
+    private ClientResponse payer;
+    private ClientResponse recipient;
 
     public void setPayer(Client payer) {
-        this.payer = new ResponseClient(payer.getFirstName(), payer.getLastName());
+        this.payer = new ClientResponse(payer.getFirstName(), payer.getLastName());
     }
 
     public void setRecipient(Client recipient) {
-        this.recipient = new ResponseClient(recipient.getFirstName(), recipient.getLastName());
+        this.recipient = new ClientResponse(recipient.getFirstName(), recipient.getLastName());
     }
 }

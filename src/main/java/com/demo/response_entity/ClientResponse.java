@@ -16,7 +16,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ResponseClient {
+public class ClientResponse {
 
     @JsonProperty("first_name")
     private String firstName;
