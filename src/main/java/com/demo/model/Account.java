@@ -7,14 +7,16 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.xml.bind.annotation.*;
 import java.math.BigDecimal;
-import java.util.List;
 
 @Entity
 @Table(name = "accounts")
 @Getter
 @Setter
 @NoArgsConstructor
+@XmlRootElement(name = "account")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Account {
 
     @Id
@@ -24,10 +26,12 @@ public class Account {
 
     @Column(name = "account_num", nullable = false)
     @JsonProperty("account_num")
+    @XmlElement(name = "account_num")
     private String accountNumber;
 
     @Column(name = "account_type", nullable = false)
     @JsonProperty("account_type")
+    @XmlElement(name = "account_type")
     private String accountType;
 
     @Column(name = "balance", nullable = false)
@@ -36,6 +40,7 @@ public class Account {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "client_id")
     @JsonIgnore
+    @XmlTransient
     private Client client;
 
 }

@@ -1,44 +1,35 @@
-package com.demo.model;
+package com.demo.model.xml;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.*;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.math.BigDecimal;
 
-@Entity
-@Table(name = "payments")
 @Getter
 @Setter
 @NoArgsConstructor
-@XmlRootElement(name = "payment")
+@XmlRootElement(name = "filter")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Payment {
+public class FilterPaymentsRequest {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "payment_id", nullable = false)
-    private Integer paymentId;
+    @JsonProperty("payer_id")
+    @XmlElement(name = "payer_id")
+    private Integer payerId;
 
-    @Column(name = "source_acc_id", nullable = false)
+    @JsonProperty("recipient_id")
+    @XmlElement(name = "recipient_id")
+    private Integer recipientId;
+
     @JsonProperty("source_acc_id")
     @XmlElement(name = "source_acc_id")
     private Integer sourceAccount;
 
-    @Column(name = "dest_acc_id", nullable = false)
     @JsonProperty("dest_acc_id")
     @XmlElement(name = "dest_acc_id")
     private Integer destinationAccount;
-
-    @Column(name = "amount", nullable = false)
-    private BigDecimal amount;
-
-    @Column(name = "reason", nullable = false)
-    private String reason;
 }

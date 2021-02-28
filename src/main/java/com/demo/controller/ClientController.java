@@ -45,7 +45,7 @@ public class ClientController {
         accounts.add(account);
         client.setAccounts(accounts);
 
-        ResponseEntity responseEntity = clientsRestController.saveClient(client);
+        ResponseEntity responseEntity = clientsRestController.saveClientJson(client);
         return responseEntity;
     }
 }
