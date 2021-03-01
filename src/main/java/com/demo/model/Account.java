@@ -5,10 +5,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import javax.persistence.*;
 import javax.xml.bind.annotation.*;
-import java.math.BigDecimal;
 
 @Entity
 @Table(name = "accounts")
@@ -35,7 +33,7 @@ public class Account {
     private String accountType;
 
     @Column(name = "balance", nullable = false)
-    private BigDecimal balance;
+    private Double balance;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "client_id")

@@ -1,0 +1,52 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+    <body>
+
+        <div th:if="${session.payments != null}">
+            <tr th:each="payment : ${session.payments}"> Payment:
+                <td th:text="${payment.sourceAccount}"></td>
+                <td th:text="${payment.destinationAccount}"></td>
+                <td th:text="${payment.amount}"></td>
+                <td th:text="${payment.reason}"></td>
+            </tr>
+        </div>
+
+        <div th:if="${session.payments != null}">
+            <form action="/view/payments/transact" method="POST">
+                <input type="submit" value="Transact"/>
+            </form>
+        </div>
+
+
+        <form action="#" th:action="@{/view/payments/create}" th:object="${paymentForm}" method="post">
+            <table>
+                <tr>
+                    <td>Source Account Id:</td>
+                    <td><input type="text" th:field="*{sourceAccount}" /></td>
+                    <td th:if="${#fields.hasErrors('sourceAccount')}" th:errors="*{sourceAccount}">SourceAccount Error</td>
+                </tr>
+                <tr>
+                    <td>Destination Account Id:</td>
+                    <td><input type="text" th:field="*{destinationAccount}" /></td>
+                    <td th:if="${#fields.hasErrors('destinationAccount')}" th:errors="*{destinationAccount}">DestinationAccount Error</td>
+                </tr>
+                <tr>
+                    <td>Amount:</td>
+                    <td><input type="text" th:field="*{amount}" /></td>
+                    <td th:if="${#fields.hasErrors('amount')}" th:errors="*{amount}">Amount Error</td>
+                </tr>
+                <tr>
+                    <td>Reason:</td>
+                    <td><input type="text" th:field="*{reason}" /></td>
+                    <td th:if="${#fields.hasErrors('reason')}" th:errors="*{reason}">Reason Error</td>
+                </tr>
+                <tr>
+                    <td><button type="submit">Create</button></td>
+                </tr>
+            </table>
+        </form>
+    </body>
+</html>

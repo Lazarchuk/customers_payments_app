@@ -4,6 +4,7 @@ import com.demo.model.Account;
 import com.demo.model.Payment;
 import com.demo.model.xml.FilterPaymentsRequest;
 import com.demo.repository.AccountRepository;
+import com.demo.repository.PaymentRepository;
 import com.demo.response_entity.ErrorResponse;
 import com.demo.response_entity.JournalContainerResponse;
 import com.demo.response_entity.JournalResponse;
@@ -11,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,15 +19,29 @@ import java.util.List;
 @Service
 public class JournalService {
 
-    private AccountRepository repository;
+    private AccountRepository accountRepository;
+    private PaymentRepository paymentRepository;
 
-    public JournalService(AccountRepository repository) {
-        this.repository = repository;
+    public JournalService(AccountRepository accountRepository, PaymentRepository paymentRepository) {
+        this.accountRepository = accountRepository;
+        this.paymentRepository = paymentRepository;
     }
 
-    public ResponseEntity<?> filterPaymentsJson(List<Payment> payments, FilterPaymentsRequest request){
-        Account sourceAccount = repository.findById(request.getSourceAccount()).orElse(null);
-        Account destinationAccount = repository.findById(request.getDestinationAccount()).orElse(null);
+    /**
+     * @param request request entity
+     * @see FilterPaymentsRequest - class for creating filters resuests
+     * @return Return list of all payments that matches to the request filter
+     */
+    public ResponseEntity<?> filterPaymentsJson(FilterPaymentsRequest request){
+        List<Payment> payments = paymentRepository.findAllBySourceAccountAndDestinationAccount(request.getSourceAccount(), request.getDestinationAccount());
+
+        if (payments.isEmpty()){
+            log.error("Input request is empty. LogName \"{}\"", log.getName());
+            return new ResponseEntity<>(new ErrorResponse(HttpStatus.BAD_REQUEST.toString(), "Input request is empty"), HttpStatus.BAD_REQUEST);
+        }
+
+        Account sourceAccount = accountRepository.findById(request.getSourceAccount()).orElse(null);
+        Account destinationAccount = accountRepository.findById(request.getDestinationAccount()).orElse(null);
 
         if (sourceAccount == null){
             log.error("Source account with id \"{}\" not found. LogName \"{}\"", request.getSourceAccount(), log.getName());
@@ -63,9 +77,21 @@ public class JournalService {
     }
 
 
-    public ResponseEntity<?> filterPaymentsxml(List<Payment> payments, FilterPaymentsRequest request){
-        Account sourceAccount = repository.findById(request.getSourceAccount()).orElse(null);
-        Account destinationAccount = repository.findById(request.getDestinationAccount()).orElse(null);
+    /**
+     * @param request request entity
+     * @see FilterPaymentsRequest - class for creating filters resuests
+     * @see JournalContainerResponse - class-wrapper for list of XML-like responses
+     * @return Return list of all payments that matches to the request filter
+     */
+    public ResponseEntity<?> filterPaymentsxml(FilterPaymentsRequest request){
+        List<Payment> payments = paymentRepository.findAllBySourceAccountAndDestinationAccount(request.getSourceAccount(), request.getDestinationAccount());
+        if (payments.isEmpty()){
+            log.error("Input request is empty. LogName \"{}\"", log.getName());
+            return new ResponseEntity<>(new ErrorResponse(HttpStatus.BAD_REQUEST.toString(), "Input request is empty"), HttpStatus.BAD_REQUEST);
+        }
+
+        Account sourceAccount = accountRepository.findById(request.getSourceAccount()).orElse(null);
+        Account destinationAccount = accountRepository.findById(request.getDestinationAccount()).orElse(null);
 
         if (sourceAccount == null){
             log.error("Source account with id \"{}\" not found. LogName \"{}\"", request.getSourceAccount(), log.getName());

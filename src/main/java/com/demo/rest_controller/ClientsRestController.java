@@ -1,7 +1,6 @@
 package com.demo.rest_controller;
 
 import com.demo.model.Client;
-import com.demo.repository.ClientRepository;
 import com.demo.response_entity.ErrorResponse;
 import com.demo.service.ClientService;
 import lombok.extern.slf4j.Slf4j;
@@ -14,11 +13,9 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/rest/v1/clients")
 public class ClientsRestController {
-    private ClientRepository repository;
     private ClientService service;
 
-    public ClientsRestController(ClientRepository repository, ClientService service) {
-        this.repository = repository;
+    public ClientsRestController(ClientService service) {
         this.service = service;
     }
 
@@ -44,6 +41,7 @@ public class ClientsRestController {
 
     @RequestMapping(value = "create/json", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public ResponseEntity<?> saveClientJson(@RequestBody Client client){
+
         if (client == null){
             log.error("Input client is null. LogName \"{}\"", log.getName());
             return new ResponseEntity<>(new ErrorResponse(HttpStatus.BAD_REQUEST.toString(), "Input client is null"), HttpStatus.BAD_REQUEST);

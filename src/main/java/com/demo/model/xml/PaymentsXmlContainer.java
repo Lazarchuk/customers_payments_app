@@ -4,7 +4,6 @@ import com.demo.model.Payment;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import javax.xml.bind.annotation.*;
 import java.util.List;
 

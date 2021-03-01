@@ -2,50 +2,122 @@ package com.demo.controller;
 
 import com.demo.model.Account;
 import com.demo.model.Client;
-import com.demo.rest_controller.ClientsRestController;
+import com.demo.model.form.AccountForm;
+import com.demo.model.form.ClientForm;
+import com.demo.service.ClientService;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
+import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
+
 
 @Controller
 @RequestMapping("/view/clients")
 public class ClientController {
-    private ClientsRestController clientsRestController;
+    private ClientService service;
 
-    public ClientController(ClientsRestController clientsRestController) {
-        this.clientsRestController = clientsRestController;
+    public ClientController(ClientService service) {
+        this.service = service;
     }
 
-    @RequestMapping(value = "", method = RequestMethod.GET)
-    public ModelAndView initForm(){
-        return new ModelAndView("startpage");
+    // Load form to get clients accounts
+    @RequestMapping(value = "get", method = RequestMethod.GET)
+    public String getClientAccounts(){
+        return "get_accounts";
     }
 
-    @RequestMapping(value = "/create", method = RequestMethod.POST, params = "customerName")
-    @ResponseBody
-    public ResponseEntity<List<Account>> createClient(@RequestParam("customerName") String name){
-        System.out.println(name);
+
+    /**
+     *  Get accounts by client id
+     * @param id  client_id
+     * @param responseType chosen content type to response list of accounts. Only JSON and XML available
+     * @return redirect to rest controller which returns ResponseBody on accounts list
+     */
+    @RequestMapping(value = "get/by_id", method = RequestMethod.GET)
+    public String getClientAccounts(@RequestParam("client_id") Integer id,
+                        @RequestParam(name = "responseType" , required = false, defaultValue = "json") String responseType){
+
+        if (responseType.equals("xml")){
+            return String.format("redirect:/rest/v1/clients/%d/xml", id);
+        }
+        return String.format("redirect:/rest/v1/clients/%d/json", id);
+    }
+
+
+    // Load form to create client
+    @RequestMapping(value = "/create", method = RequestMethod.GET)
+    public String getClientForm(ClientForm clientForm){
+        return "create_client";
+    }
+
+    /**
+     * Creates client from UI
+     * @param clientForm   model object from thymeleaf HTML form
+     * @return  Return this form if client is invalid or redirect to creation account form
+     */
+    @RequestMapping(value = "/create", method = RequestMethod.POST)
+    public String createClient(@Valid ClientForm clientForm, BindingResult bindingResult, HttpSession session) {
+
+        if (bindingResult.hasErrors()) {
+            return "create_client";
+        }
+
         Client client = new Client();
-        client.setFirstName(name);
-        client.setLastName("Yohanson");
-
-        Account account = new Account();
-        account.setAccountNumber("654984263");
-        account.setAccountType("card/credit");
-        account.setBalance(new BigDecimal(9900.00));
-        List<Account> accounts = new ArrayList<>();
-        accounts.add(account);
-        client.setAccounts(accounts);
-
-        ResponseEntity responseEntity = clientsRestController.saveClientJson(client);
-        return responseEntity;
+        client.setFirstName(clientForm.getFirstName());
+        client.setLastName(clientForm.getLastName());
+        session.setAttribute("client", client);
+        return "redirect:/view/clients/account";
     }
+
+
+    // Load form to create account
+    @RequestMapping(value = "/account", method = RequestMethod.GET)
+    public String getAccountForm(AccountForm accountForm){
+        return "create_account";
+    }
+
+    /**
+     * Creates account, add it to created client
+     * @param accountForm   model object from thymeleaf HTML form
+     * @return  Return this form if account is invalid of return new form to create new account
+     */
+    @RequestMapping(value = "/account", method = RequestMethod.POST)
+    public String createAccount(@Valid AccountForm accountForm, BindingResult bindingResult,
+                                HttpSession session, ModelMap model) {
+
+        if (bindingResult.hasErrors()) {
+            return "create_account";
+        }
+
+        Client client = (Client) session.getAttribute("client");
+        Account account = new Account();
+        account.setAccountNumber(accountForm.getAccountNumber());
+        account.setAccountType(accountForm.getAccountType());
+        account.setBalance(accountForm.getBalance());
+
+        client.getAccounts().add(account);
+        session.setAttribute("client", client);
+        model.addAttribute("accountForm", new AccountForm());
+        return "create_account";
+    }
+
+
+    /**
+     * Persist client in database
+     * @return Return result of saving client in DB
+     */
+    @RequestMapping(value = "/save", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public ResponseEntity<?> saveClient(HttpSession session){
+
+        Client client = (Client)  session.getAttribute("client");
+        session.removeAttribute("client");
+        return service.createClient(client);
+    }
+
 }

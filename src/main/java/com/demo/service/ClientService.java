@@ -20,6 +20,10 @@ public class ClientService {
         this.repository = repository;
     }
 
+    /**
+     * @param id client identifier
+     * @return all client account in database
+     */
     public ResponseEntity<?> getClientAccountsJson(Integer id){
         Client client = repository.findById(id).orElse(null);
         if (client == null){
@@ -30,6 +34,11 @@ public class ClientService {
         return new ResponseEntity<>(client.getAccounts(), HttpStatus.OK);
     }
 
+    /**
+     * @param id client identifier
+     * @see AccountsContainerResponse - class-wrapper for list of XML-like accounts
+     * @return all client account in database
+     */
     public ResponseEntity<?> getClientAccountsXml(Integer id){
         Client client = repository.findById(id).orElse(null);
         if (client == null){
@@ -43,6 +52,11 @@ public class ClientService {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    /**
+     * @param client persist client in database
+     * @see CreatedClientResponse - response class
+     * @return Return persisting result
+     */
     public ResponseEntity<?> createClient(Client client){
         client.getAccounts().forEach(acc -> acc.setClient(client));
 

@@ -2,7 +2,6 @@ package com.demo.rest_controller;
 
 import com.demo.model.*;
 import com.demo.model.xml.PaymentsXmlContainer;
-import com.demo.repository.PaymentRepository;
 import com.demo.response_entity.ErrorResponse;
 import com.demo.service.PaymentService;
 import lombok.extern.slf4j.Slf4j;
@@ -16,14 +15,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/rest/v1/payments")
 public class PaymentsRestController {
-    private PaymentRepository paymentRepository;
     private PaymentService service;
 
-    public PaymentsRestController(PaymentRepository paymentRepository, PaymentService service) {
-        this.paymentRepository = paymentRepository;
+    public PaymentsRestController(PaymentService service) {
         this.service = service;
     }
-
 
     @RequestMapping(value = "create/json", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public ResponseEntity<?> createPaymentJson(@RequestBody Payment payment){
@@ -51,14 +47,7 @@ public class PaymentsRestController {
     public ResponseEntity<?> createPaymentsJson(@RequestBody List<Payment> payments,
                                                 @RequestParam(name = "responseType", required = false) String responseType){
 
-        if (payments == null || payments.isEmpty()){
-            log.error("Input payment is null. LogName \"{}\"", log.getName());
-            return new ResponseEntity<>(new ErrorResponse(HttpStatus.BAD_REQUEST.toString(), "Input payment is null or empty"), HttpStatus.BAD_REQUEST);
-        }
-
-        List<Payment> persistedPayments = paymentRepository.saveAll(payments);
-
-        return service.createPayments(persistedPayments, responseType);
+        return service.createPayments(payments, responseType);
     }
 
 
@@ -66,13 +55,6 @@ public class PaymentsRestController {
     public ResponseEntity<?> createPaymentsXml(@RequestBody PaymentsXmlContainer container,
                                                @RequestParam(name = "responseType", required = false) String responseType){
 
-        if (container == null || container.getPayments().isEmpty()){
-            log.error("Input payment is null. LogName \"{}\"", log.getName());
-            return new ResponseEntity<>(new ErrorResponse(HttpStatus.BAD_REQUEST.toString(), "Input payment is null or empty"), HttpStatus.BAD_REQUEST);
-        }
-
-        List<Payment> persistedPayments = paymentRepository.saveAll(container.getPayments());
-
-        return service.createPayments(persistedPayments, responseType);
+        return service.createPayments(container.getPayments(), responseType);
     }
 }

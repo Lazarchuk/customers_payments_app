@@ -1,0 +1,51 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+    <body>
+
+        <div th:if="${session.client != null}">
+            <p th:text="'First name: ' + ${session.client.firstName}"></p>
+            <p th:text="'Last name: ' + ${session.client.lastName}"></p>
+
+            <div th:if="${session.client.accounts != null}">
+                <tr th:each="account : ${session.client.accounts}">
+                    <td th:text="${account.accountNumber}"></td>
+                    <td th:text="${account.accountType}"></td>
+                    <td th:text="${account.balance}"></td>
+                </tr>
+            </div>
+        </div>
+
+        <div th:if="${session.client != null}">
+            <form action="/view/clients/save" method="POST">
+                <input type="submit" value="Save client"/>
+            </form>
+        </div>
+
+
+        <form action="#" th:action="@{/view/clients/account}" th:object="${accountForm}" method="post">
+            <table>
+                <tr>
+                    <td>Account number:</td>
+                    <td><input type="text" th:field="*{accountNumber}" /></td>
+                    <td th:if="${#fields.hasErrors('accountNumber')}" th:errors="*{accountNumber}">AccountNumber Error</td>
+                </tr>
+                <tr>
+                    <td>Account type:</td>
+                    <td><input type="text" th:field="*{accountType}" /></td>
+                    <td th:if="${#fields.hasErrors('accountType')}" th:errors="*{accountType}">AccountType Error</td>
+                </tr>
+                <tr>
+                    <td>Balance:</td>
+                    <td><input type="text" th:field="*{balance}" /></td>
+                    <td th:if="${#fields.hasErrors('balance')}" th:errors="*{balance}">Balance Error</td>
+                </tr>
+                <tr>
+                    <td><button type="submit">Create</button></td>
+                </tr>
+            </table>
+        </form>
+    </body>
+</html>
