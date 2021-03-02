@@ -32,6 +32,6 @@ public class PaymentsJournalRestController {
                                                         consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public ResponseEntity<?> filterPaymentsXml(@RequestBody FilterPaymentsRequest request){
 
-        return service.filterPaymentsxml(request);
+        return service.filterPaymentsXml(request);
     }
 }

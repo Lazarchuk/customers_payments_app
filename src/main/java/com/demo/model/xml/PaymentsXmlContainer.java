@@ -7,6 +7,9 @@ import lombok.Setter;
 import javax.xml.bind.annotation.*;
 import java.util.List;
 
+/**
+ * Wrapper for list of input payments, in XML view
+ */
 @Getter
 @Setter
 @NoArgsConstructor

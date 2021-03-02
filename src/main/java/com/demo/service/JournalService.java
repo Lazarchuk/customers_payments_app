@@ -37,7 +37,7 @@ public class JournalService {
 
         if (payments.isEmpty()){
             log.error("Input request is empty. LogName \"{}\"", log.getName());
-            return new ResponseEntity<>(new ErrorResponse(HttpStatus.BAD_REQUEST.toString(), "Input request is empty"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ErrorResponse(HttpStatus.NOT_FOUND.toString(), "No matches data for input request"), HttpStatus.BAD_REQUEST);
         }
 
         Account sourceAccount = accountRepository.findById(request.getSourceAccount()).orElse(null);
@@ -83,11 +83,11 @@ public class JournalService {
      * @see JournalContainerResponse - class-wrapper for list of XML-like responses
      * @return Return list of all payments that matches to the request filter
      */
-    public ResponseEntity<?> filterPaymentsxml(FilterPaymentsRequest request){
+    public ResponseEntity<?> filterPaymentsXml(FilterPaymentsRequest request){
         List<Payment> payments = paymentRepository.findAllBySourceAccountAndDestinationAccount(request.getSourceAccount(), request.getDestinationAccount());
         if (payments.isEmpty()){
             log.error("Input request is empty. LogName \"{}\"", log.getName());
-            return new ResponseEntity<>(new ErrorResponse(HttpStatus.BAD_REQUEST.toString(), "Input request is empty"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ErrorResponse(HttpStatus.NOT_FOUND.toString(), "No matches data for input request"), HttpStatus.BAD_REQUEST);
         }
 
         Account sourceAccount = accountRepository.findById(request.getSourceAccount()).orElse(null);
@@ -127,5 +127,13 @@ public class JournalService {
         response.setPayments(paymentsList);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+
+    public ResponseEntity<?> filterPayments(FilterPaymentsRequest request, String responseType){
+        if (responseType.equals("xml")){
+            return filterPaymentsXml(request);
+        }
+        else return filterPaymentsJson(request);
     }
 }

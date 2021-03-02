@@ -7,6 +7,10 @@ import lombok.Setter;
 import javax.xml.bind.annotation.*;
 import java.util.List;
 
+/**
+ * Wrapper for XML response of transacted payments
+ */
+
 @Getter
 @Setter
 @NoArgsConstructor

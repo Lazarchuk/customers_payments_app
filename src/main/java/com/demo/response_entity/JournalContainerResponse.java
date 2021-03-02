@@ -7,6 +7,9 @@ import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
+/**
+ * Wrapper for XML response of filtered payments list
+ */
 @XmlRootElement(name = "payments")
 @Getter
 public class JournalContainerResponse {

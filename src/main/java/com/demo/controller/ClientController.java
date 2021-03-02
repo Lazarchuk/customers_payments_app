@@ -113,11 +113,12 @@ public class ClientController {
      */
     @RequestMapping(value = "/save", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public ResponseEntity<?> saveClient(HttpSession session){
+    public ResponseEntity<?> saveClient(HttpSession session, @RequestParam(value = "responseType",
+                                            required = false, defaultValue = "json") String responseType){
 
         Client client = (Client)  session.getAttribute("client");
         session.removeAttribute("client");
-        return service.createClient(client);
+        return service.createClient(client, responseType);
     }
 
 }

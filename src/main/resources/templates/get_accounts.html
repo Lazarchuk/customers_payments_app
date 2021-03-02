@@ -1,13 +1,55 @@
 <!DOCTYPE HTML>
 <html>
+    <style>
+        body{
+            background-color: lightgray;
+        }
+        form {
+            max-width: 250px;
+            padding: 15px 20px;
+        }
+        input {
+            padding: 5px;
+        }
+        .input-name {
+            margin-bottom: 15px;
+            display: block;
+        }
+        .input-name:focus {
+            box-shadow: 0px 0px 10px 0px lightgreen;
+        }
+        .input-submit {
+            outline: none;
+            border: none;
+            margin-top: 15px;
+            padding: 10px 15px;
+            display: block;
+            cursor: pointer;
+            background-color: #fff;
+            border-radius: 5px;
+            font-weight: 700;
+        }
+        .input-submit:hover {
+            background-color: lightgreen;
+        }
+        .title-form {
+            display: block;
+            margin: 5px 5px;
+        }
+    </style>
     <body>
         <form action="/view/clients/get/by_id" method="GET">
-            <input type="text" name="client_id" value=""/>
-            <input type="radio" name="responseType" value="json" id="contentJson"/>
-            <label for="contentJson">json</label>
-            <input type="radio" name="responseType" value="xml" id="contentXml"/>
-            <label for="contentXml">xml</label>
-            <input type="submit" value="Get accounts"/>
+
+            <div class="title-form">Client id</div>
+            <input class="input-name" type="text" name="client_id" value=""/>
+
+            <div class="title-form">Response type</div>
+                <input type="radio" name="responseType" value="json" id="contentJson"/>
+                <label for="contentJson">json</label>
+                <input type="radio" name="responseType" value="xml" id="contentXml"/>
+                <label for="contentXml">xml</label>
+            
+            <input class="input-submit" type="submit" value="Get accounts"/>
         </form>
     </body>
 </html>

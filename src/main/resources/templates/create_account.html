@@ -3,49 +3,118 @@
       xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+      <style>
+        body {
+            background-color: lightgrey;
+            padding: 10px;
+        }
+        .save-client-btn{
+            display: block;
+            margin-top: 5px;
+        }
+        button,
+        .save-client-btn {
+            background-color: #fff;
+            padding: 5px 10px;
+            cursor: pointer;
+            outline: none;
+            border: none;
+            border-radius: 5px;
+            font-weight: 700;
+        }
+        button:hover ,
+        .save-client-btn:hover{
+           background-color: lightgreen;
+        }
+        form input {
+            border: none;
+            outline: none;
+            padding: 5px;
+            margin-bottom: 5px;
+            margin-right: 10px;
+            margin-left: 2px;
+        }
+        input:focus {
+          box-shadow: 0px 0px 10px 0px lightgreen;
+        }
+        .title-form {
+            display: block;
+            margin: 5px 5px;
+        }
+        .created-client{
+            background: white;
+            display: inline-block;
+        }
+        .created-client p{
+            background: white;
+            margin: 5px 5px;
+        }
+        .title-account{
+            display: block;
+            margin: 10px 0 5px -20px;
+        }
+        .account-info{
+            display: block;
+            margin: 8px 5px 5px 40px;
+        }
+        .create-account-form{
+            display: block;
+            margin-top: 30px;
+        }
+  </style>
     <body>
 
         <div th:if="${session.client != null}">
-            <p th:text="'First name: ' + ${session.client.firstName}"></p>
-            <p th:text="'Last name: ' + ${session.client.lastName}"></p>
+            <div class="created-client">
+                <p th:text="'First name: ' + ${session.client.firstName}"></p>
+                <p th:text="'Last name: ' + ${session.client.lastName}"></p>
 
-            <div th:if="${session.client.accounts != null}">
-                <tr th:each="account : ${session.client.accounts}">
-                    <td th:text="${account.accountNumber}"></td>
-                    <td th:text="${account.accountType}"></td>
-                    <td th:text="${account.balance}"></td>
-                </tr>
+                <div th:if="${session.client.accounts != null}">
+                    <div class="account-info" th:each="account : ${session.client.accounts}">
+                        <div class="title-account">Account:</div>
+                        <p th:text="'Number: ' +${account.accountNumber}"></p>
+                        <p th:text="'Type: ' +${account.accountType}"></p>
+                        <p th:text="'Balance: ' +${account.balance}"></p>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <form action="/view/clients/save" method="POST">
+                    <div class="title-form">Response type</div>
+                    <input type="radio" name="responseType" value="json" id="contentJson"/>
+                    <label for="contentJson">json</label>
+                    <input type="radio" name="responseType" value="xml" id="contentXml"/>
+                    <label for="contentXml">xml</label>
+                    <input class="save-client-btn" type="submit" value="Save client"/>
+                </form>
             </div>
         </div>
 
-        <div th:if="${session.client != null}">
-            <form action="/view/clients/save" method="POST">
-                <input type="submit" value="Save client"/>
+        <div class="create-account-form">
+            <div class="title-form">New account</div>
+            <form action="#" th:action="@{/view/clients/account}" th:object="${accountForm}" method="post">
+                <table>
+                    <tr>
+                        <td>Account number:</td>
+                        <td><input type="text" th:field="*{accountNumber}" /></td>
+                        <td th:if="${#fields.hasErrors('accountNumber')}" th:errors="*{accountNumber}">AccountNumber Error</td>
+                    </tr>
+                    <tr>
+                        <td>Account type:</td>
+                        <td><input type="text" th:field="*{accountType}" /></td>
+                        <td th:if="${#fields.hasErrors('accountType')}" th:errors="*{accountType}">AccountType Error</td>
+                    </tr>
+                    <tr>
+                        <td>Balance:</td>
+                        <td><input type="text" th:field="*{balance}" /></td>
+                        <td th:if="${#fields.hasErrors('balance')}" th:errors="*{balance}">Balance Error</td>
+                    </tr>
+                    <tr>
+                        <td><button type="submit">Create</button></td>
+                    </tr>
+                </table>
             </form>
         </div>
-
-
-        <form action="#" th:action="@{/view/clients/account}" th:object="${accountForm}" method="post">
-            <table>
-                <tr>
-                    <td>Account number:</td>
-                    <td><input type="text" th:field="*{accountNumber}" /></td>
-                    <td th:if="${#fields.hasErrors('accountNumber')}" th:errors="*{accountNumber}">AccountNumber Error</td>
-                </tr>
-                <tr>
-                    <td>Account type:</td>
-                    <td><input type="text" th:field="*{accountType}" /></td>
-                    <td th:if="${#fields.hasErrors('accountType')}" th:errors="*{accountType}">AccountType Error</td>
-                </tr>
-                <tr>
-                    <td>Balance:</td>
-                    <td><input type="text" th:field="*{balance}" /></td>
-                    <td th:if="${#fields.hasErrors('balance')}" th:errors="*{balance}">Balance Error</td>
-                </tr>
-                <tr>
-                    <td><button type="submit">Create</button></td>
-                </tr>
-            </table>
-        </form>
     </body>
 </html>

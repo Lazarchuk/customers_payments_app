@@ -10,6 +10,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpSession;
@@ -68,10 +69,11 @@ public class PaymentController {
      */
     @RequestMapping(value = "/transact", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public ResponseEntity<?> paymentsTransact(HttpSession session){
+    public ResponseEntity<?> paymentsTransact(HttpSession session,
+                                  @RequestParam(value = "responseType", required = false, defaultValue = "json") String responseType){
         List<Payment> payments = (List<Payment>) session.getAttribute("payments");
         session.removeAttribute("payments");
-        return service.createPayments(payments, "");
+        return service.createPayments(payments, responseType);
     }
 
 }

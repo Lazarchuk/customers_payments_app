@@ -3,50 +3,115 @@
       xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
-    <body>
+      <style>
+          body {
+              background-color: lightgrey;
+              padding: 10px;
+          }
 
+          .transact-button{
+              display: block;
+              margin-top: 5px;
+          }
+          .transact-button,
+          button {
+              background-color: #fff;
+              padding: 5px 10px;
+              cursor: pointer;
+              outline: none;
+              border: none;
+              border-radius: 5px;
+              font-weight: 700;
+          }
+          .transact-button:hover,
+          button:hover {
+             background-color: lightgreen;
+          }
+
+          form input {
+              border: none;
+              outline: none;
+              padding: 5px;
+              margin-bottom: 5px;
+              margin-right: 10px;
+              margin-left: 2px;
+          }
+          input:focus {
+            box-shadow: 0px 0px 10px 0px lightgreen;
+          }
+          .created-payment{
+              background: white;
+              display: inline-block;
+              margin: 5px 5px;
+          }
+          .created-payment p{
+              background: white;
+              margin: 5px 25px;
+          }
+          .title-account{
+              margin: 5px 10px;
+          }
+          .title-form {
+              display: block;
+              margin: 5px 5px;
+          }
+          .create-account-form{
+              display: block;
+              margin-top: 30px;
+          }
+    </style>
+    <body>
         <div th:if="${session.payments != null}">
-            <tr th:each="payment : ${session.payments}"> Payment:
-                <td th:text="${payment.sourceAccount}"></td>
-                <td th:text="${payment.destinationAccount}"></td>
-                <td th:text="${payment.amount}"></td>
-                <td th:text="${payment.reason}"></td>
-            </tr>
+            <div class="created-payment" th:each="payment : ${session.payments}">
+                <div class="title-account">Payment:</div>
+                <p th:text="'Source account: ' + ${payment.sourceAccount}"></p>
+                <p th:text="'Destination account: ' + ${payment.destinationAccount}"></p>
+                <p th:text="'Amount: ' + ${payment.amount}"></p>
+                <p th:text="'Reason: ' + ${payment.reason}"></p>
+            </div>
+
+            <div>
+                <form action="/view/payments/transact" method="POST">
+                    <div class="title-form">Response type</div>
+                    <input type="radio" name="responseType" value="json" id="contentJson"/>
+                    <label for="contentJson">json</label>
+                    <input type="radio" name="responseType" value="xml" id="contentXml"/>
+                    <label for="contentXml">xml</label>
+                    <input class="transact-button" type="submit" value="Transact"/>
+                </form>
+            </div>
         </div>
 
-        <div th:if="${session.payments != null}">
-            <form action="/view/payments/transact" method="POST">
-                <input type="submit" value="Transact"/>
+
+        <div class="create-account-form">
+            <div class="title-form">New payment</div>
+            <form action="#" th:action="@{/view/payments/create}" th:object="${paymentForm}" method="post">
+                <table>
+                    <tr>
+                        <td>Source Account Id:</td>
+                        <td><input type="text" th:field="*{sourceAccount}" /></td>
+                        <td th:if="${#fields.hasErrors('sourceAccount')}" th:errors="*{sourceAccount}">SourceAccount Error</td>
+                    </tr>
+                    <tr>
+                        <td>Destination Account Id:</td>
+                        <td><input type="text" th:field="*{destinationAccount}" /></td>
+                        <td th:if="${#fields.hasErrors('destinationAccount')}" th:errors="*{destinationAccount}">DestinationAccount Error</td>
+                    </tr>
+                    <tr>
+                        <td>Amount:</td>
+                        <td><input type="text" th:field="*{amount}" /></td>
+                        <td th:if="${#fields.hasErrors('amount')}" th:errors="*{amount}">Amount Error</td>
+                    </tr>
+                    <tr>
+                        <td>Reason:</td>
+                        <td><input type="text" th:field="*{reason}" /></td>
+                        <td th:if="${#fields.hasErrors('reason')}" th:errors="*{reason}">Reason Error</td>
+                    </tr>
+                    <tr>
+                        <td><button type="submit">Create</button></td>
+                    </tr>
+                </table>
             </form>
         </div>
-
-
-        <form action="#" th:action="@{/view/payments/create}" th:object="${paymentForm}" method="post">
-            <table>
-                <tr>
-                    <td>Source Account Id:</td>
-                    <td><input type="text" th:field="*{sourceAccount}" /></td>
-                    <td th:if="${#fields.hasErrors('sourceAccount')}" th:errors="*{sourceAccount}">SourceAccount Error</td>
-                </tr>
-                <tr>
-                    <td>Destination Account Id:</td>
-                    <td><input type="text" th:field="*{destinationAccount}" /></td>
-                    <td th:if="${#fields.hasErrors('destinationAccount')}" th:errors="*{destinationAccount}">DestinationAccount Error</td>
-                </tr>
-                <tr>
-                    <td>Amount:</td>
-                    <td><input type="text" th:field="*{amount}" /></td>
-                    <td th:if="${#fields.hasErrors('amount')}" th:errors="*{amount}">Amount Error</td>
-                </tr>
-                <tr>
-                    <td>Reason:</td>
-                    <td><input type="text" th:field="*{reason}" /></td>
-                    <td th:if="${#fields.hasErrors('reason')}" th:errors="*{reason}">Reason Error</td>
-                </tr>
-                <tr>
-                    <td><button type="submit">Create</button></td>
-                </tr>
-            </table>
-        </form>
     </body>
 </html>

@@ -6,7 +6,9 @@ import com.demo.response_entity.AccountsContainerResponse;
 import com.demo.response_entity.CreatedClientResponse;
 import com.demo.response_entity.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -62,5 +64,26 @@ public class ClientService {
 
         Client persistedClient = repository.save(client);
         return new ResponseEntity<>(new CreatedClientResponse(persistedClient.getClientId()), HttpStatus.CREATED);
+    }
+
+    /**
+     * @param client persist client in database
+     * @param responseType asked MediaType for response
+     * @see CreatedClientResponse - response class
+     * @return Return persisting result
+     */
+    public ResponseEntity<?> createClient(Client client, String responseType){
+        client.getAccounts().forEach(acc -> acc.setClient(client));
+
+        HttpHeaders headers = new HttpHeaders();
+        if (responseType.equals("json")){
+            headers.setContentType(MediaType.APPLICATION_JSON);
+        }
+        if (responseType.equals("xml")){
+            headers.setContentType(MediaType.APPLICATION_XML);
+        }
+
+        Client persistedClient = repository.save(client);
+        return new ResponseEntity<>(new CreatedClientResponse(persistedClient.getClientId()), headers, HttpStatus.CREATED);
     }
 }

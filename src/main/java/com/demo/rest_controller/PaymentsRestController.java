@@ -43,7 +43,7 @@ public class PaymentsRestController {
     }
 
 
-    @RequestMapping(value = "createmany/json", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "createmany/fromjson", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> createPaymentsJson(@RequestBody List<Payment> payments,
                                                 @RequestParam(name = "responseType", required = false) String responseType){
 
@@ -51,7 +51,7 @@ public class PaymentsRestController {
     }
 
 
-    @RequestMapping(value = "createmany/xml", method = RequestMethod.POST, consumes = MediaType.APPLICATION_XML_VALUE)
+    @RequestMapping(value = "createmany/fromxml", method = RequestMethod.POST, consumes = MediaType.APPLICATION_XML_VALUE)
     public ResponseEntity<?> createPaymentsXml(@RequestBody PaymentsXmlContainer container,
                                                @RequestParam(name = "responseType", required = false) String responseType){
 

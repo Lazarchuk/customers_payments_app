@@ -9,6 +9,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Wrapper for XML response of client accounts list
+ */
 @XmlRootElement(name = "accounts")
 @Getter
 public class AccountsContainerResponse {
