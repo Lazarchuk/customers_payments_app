@@ -4,14 +4,13 @@ import com.demo.model.Account;
 import com.demo.model.Client;
 import com.demo.model.form.AccountForm;
 import com.demo.model.form.ClientForm;
-import com.demo.service.ClientService;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.web.client.RestTemplate;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
@@ -19,11 +18,7 @@ import javax.validation.Valid;
 @Controller
 @RequestMapping("/view/clients")
 public class ClientController {
-    private ClientService service;
 
-    public ClientController(ClientService service) {
-        this.service = service;
-    }
 
     // Load form to get clients accounts
     @RequestMapping(value = "get", method = RequestMethod.GET)
@@ -113,12 +108,20 @@ public class ClientController {
      */
     @RequestMapping(value = "/save", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public ResponseEntity<?> saveClient(HttpSession session, @RequestParam(value = "responseType",
-                                            required = false, defaultValue = "json") String responseType){
+    public ResponseEntity<Object> saveClient(HttpSession session){
 
         Client client = (Client)  session.getAttribute("client");
         session.removeAttribute("client");
-        return service.createClient(client, responseType);
+
+        HttpHeaders requestHeaders = new HttpHeaders();
+        HttpEntity<Client> requestEntity = new HttpEntity<>(client, requestHeaders);
+
+        RestTemplate template = new RestTemplate();
+        template.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+
+        ResponseEntity<Object> responseEntity = template.exchange("http://localhost:9966/rest/v1/clients/create/json", HttpMethod.POST, requestEntity, Object.class);
+        return responseEntity;
     }
+
 
 }

@@ -37,7 +37,7 @@ public class JournalService {
 
         if (payments.isEmpty()){
             log.error("Input request is empty. LogName \"{}\"", log.getName());
-            return new ResponseEntity<>(new ErrorResponse(HttpStatus.NOT_FOUND.toString(), "No matches data for input request"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ErrorResponse(HttpStatus.NOT_FOUND.toString(), "No matches data for input request"), HttpStatus.OK);
         }
 
         Account sourceAccount = accountRepository.findById(request.getSourceAccount()).orElse(null);
@@ -45,20 +45,20 @@ public class JournalService {
 
         if (sourceAccount == null){
             log.error("Source account with id \"{}\" not found. LogName \"{}\"", request.getSourceAccount(), log.getName());
-            return new ResponseEntity<>(new ErrorResponse(HttpStatus.NOT_FOUND.toString(), "Source account not found"), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new ErrorResponse(HttpStatus.NOT_FOUND.toString(), "Source account not found"), HttpStatus.OK);
         }
         if (destinationAccount == null){
             log.error("Destination account with id \"{}\" not found. LogName \"{}\"", request.getDestinationAccount(), log.getName());
-            return new ResponseEntity<>(new ErrorResponse(HttpStatus.NOT_FOUND.toString(), "Destination account not found"), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new ErrorResponse(HttpStatus.NOT_FOUND.toString(), "Destination account not found"), HttpStatus.OK);
         }
 
         if(!sourceAccount.getClient().getClientId().equals(request.getPayerId())){
             log.error("Payer with id \"{}\" don't have the account with id \"{}\". LogName \"{}\"", request.getPayerId(), request.getSourceAccount(), log.getName());
-            return new ResponseEntity<>(new ErrorResponse(HttpStatus.NOT_FOUND.toString(), "Payer identifier and source account don't matches"), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new ErrorResponse(HttpStatus.NOT_FOUND.toString(), "Payer identifier and source account don't matches"), HttpStatus.OK);
         }
         if(!destinationAccount.getClient().getClientId().equals(request.getRecipientId())){
             log.error("Recipient with id \"{}\" don't have the account with id \"{}\". LogName \"{}\"", request.getRecipientId(), request.getDestinationAccount(), log.getName());
-            return new ResponseEntity<>(new ErrorResponse(HttpStatus.NOT_FOUND.toString(), "Recipient identifier and destination account don't matches"), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new ErrorResponse(HttpStatus.NOT_FOUND.toString(), "Recipient identifier and destination account don't matches"), HttpStatus.OK);
         }
 
         List<JournalResponse> response = new ArrayList<>();
@@ -87,7 +87,7 @@ public class JournalService {
         List<Payment> payments = paymentRepository.findAllBySourceAccountAndDestinationAccount(request.getSourceAccount(), request.getDestinationAccount());
         if (payments.isEmpty()){
             log.error("Input request is empty. LogName \"{}\"", log.getName());
-            return new ResponseEntity<>(new ErrorResponse(HttpStatus.NOT_FOUND.toString(), "No matches data for input request"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ErrorResponse(HttpStatus.NOT_FOUND.toString(), "No matches data for input request"), HttpStatus.OK);
         }
 
         Account sourceAccount = accountRepository.findById(request.getSourceAccount()).orElse(null);
@@ -95,20 +95,20 @@ public class JournalService {
 
         if (sourceAccount == null){
             log.error("Source account with id \"{}\" not found. LogName \"{}\"", request.getSourceAccount(), log.getName());
-            return new ResponseEntity<>(new ErrorResponse(HttpStatus.NOT_FOUND.toString(), "Source account not found"), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new ErrorResponse(HttpStatus.NOT_FOUND.toString(), "Source account not found"), HttpStatus.OK);
         }
         if (destinationAccount == null){
             log.error("Destination account with id \"{}\" not found. LogName \"{}\"", request.getDestinationAccount(), log.getName());
-            return new ResponseEntity<>(new ErrorResponse(HttpStatus.NOT_FOUND.toString(), "Destination account not found"), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new ErrorResponse(HttpStatus.NOT_FOUND.toString(), "Destination account not found"), HttpStatus.OK);
         }
 
         if(!sourceAccount.getClient().getClientId().equals(request.getPayerId())){
             log.error("Payer with id \"{}\" don't have the account with id \"{}\". LogName \"{}\"", request.getPayerId(), request.getSourceAccount(), log.getName());
-            return new ResponseEntity<>(new ErrorResponse(HttpStatus.NOT_FOUND.toString(), "Payer identifier and source account don't matches"), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new ErrorResponse(HttpStatus.NOT_FOUND.toString(), "Payer identifier and source account don't matches"), HttpStatus.OK);
         }
         if(!destinationAccount.getClient().getClientId().equals(request.getRecipientId())){
             log.error("Recipient with id \"{}\" don't have the account with id \"{}\". LogName \"{}\"", request.getRecipientId(), request.getDestinationAccount(), log.getName());
-            return new ResponseEntity<>(new ErrorResponse(HttpStatus.NOT_FOUND.toString(), "Recipient identifier and destination account don't matches"), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new ErrorResponse(HttpStatus.NOT_FOUND.toString(), "Recipient identifier and destination account don't matches"), HttpStatus.OK);
         }
 
         List<JournalResponse> paymentsList = new ArrayList<>();

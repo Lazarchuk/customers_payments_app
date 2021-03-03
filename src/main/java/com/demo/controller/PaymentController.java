@@ -2,16 +2,15 @@ package com.demo.controller;
 
 import com.demo.model.Payment;
 import com.demo.model.form.PaymentForm;
-import com.demo.service.PaymentService;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
@@ -22,11 +21,6 @@ import java.util.List;
 @RequestMapping("/view/payments")
 public class PaymentController {
 
-    private PaymentService service;
-
-    public PaymentController(PaymentService service) {
-        this.service = service;
-    }
 
     // Load form to create payment
     @RequestMapping(value = "/create", method = RequestMethod.GET)
@@ -69,11 +63,18 @@ public class PaymentController {
      */
     @RequestMapping(value = "/transact", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public ResponseEntity<?> paymentsTransact(HttpSession session,
-                                  @RequestParam(value = "responseType", required = false, defaultValue = "json") String responseType){
+    public ResponseEntity<Object> paymentsTransact(HttpSession session){
         List<Payment> payments = (List<Payment>) session.getAttribute("payments");
         session.removeAttribute("payments");
-        return service.createPayments(payments, responseType);
+
+        HttpHeaders requestHeaders = new HttpHeaders();
+        HttpEntity<List<Payment>> requestEntity = new HttpEntity<>(payments, requestHeaders);
+
+        RestTemplate template = new RestTemplate();
+        template.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+
+        ResponseEntity<Object> responseEntity = template.exchange("http://localhost:9966/rest/v1/payments/createmany/fromjson", HttpMethod.POST, requestEntity, Object.class);
+        return responseEntity;
     }
 
 }

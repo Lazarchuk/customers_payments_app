@@ -22,6 +22,7 @@ import java.util.List;
 @Slf4j
 public class PaymentService {
 
+
     private AccountRepository accountRepository;
     private PaymentRepository paymentRepository;
 
@@ -72,7 +73,7 @@ public class PaymentService {
             log.info("Transaction number {} success", persistedPayment.getPaymentId());
         } catch (RuntimeException e){
             log.error("Transaction number {} failed. RuntimeException was thrown during execution. LogName \"{}\"", persistedPayment.getPaymentId(), log.getName());
-            return new ResponseEntity<>(new ErrorResponse(HttpStatus.BAD_REQUEST.toString(), e.getMessage()), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ErrorResponse(HttpStatus.BAD_REQUEST.toString(), e.getMessage()), HttpStatus.OK);
         }
         return new ResponseEntity<>(new PaymentResponse(persistedPayment.getPaymentId(), "ok"), HttpStatus.CREATED);
     }
@@ -85,7 +86,7 @@ public class PaymentService {
     public ResponseEntity<?> createPayments(List<Payment> payments, String responseType){
         if (payments == null || payments.isEmpty()){
             log.error("Input payment is null. LogName \"{}\"", log.getName());
-            return new ResponseEntity<>(new ErrorResponse(HttpStatus.BAD_REQUEST.toString(), "Input payment is null or empty"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ErrorResponse(HttpStatus.BAD_REQUEST.toString(), "Input payment is null or empty"), HttpStatus.OK);
         }
 
         List<Payment> persistedPayments = paymentRepository.saveAll(payments);
@@ -97,7 +98,8 @@ public class PaymentService {
                 paymentResponses.add(new PaymentResponse(payment.getPaymentId(), "ok"));
                 log.info("Transaction number {} success", payment.getPaymentId());
             } catch (RuntimeException e){
-                paymentResponses.add(new PaymentResponse(payment.getPaymentId(), "error"));
+                System.out.println("111113153135");
+                paymentResponses.add(new PaymentResponse(payment.getPaymentId(), e.getMessage()));
                 log.error("Transaction number {} failed. RuntimeException was thrown during execution. LogName \"{}\"", payment.getPaymentId(), log.getName());
             }
         });
@@ -115,4 +117,5 @@ public class PaymentService {
 
         return new ResponseEntity<>(paymentResponses, HttpStatus.OK);
     }
+
 }

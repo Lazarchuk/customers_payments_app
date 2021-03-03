@@ -2,15 +2,14 @@ package com.demo.controller;
 
 import com.demo.model.form.FilterForm;
 import com.demo.model.xml.FilterPaymentsRequest;
-import com.demo.service.JournalService;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
@@ -19,11 +18,6 @@ import javax.validation.Valid;
 @RequestMapping("/view/filters")
 public class PaymentsFilterController {
 
-    private JournalService service;
-
-    public PaymentsFilterController(JournalService service) {
-        this.service = service;
-    }
 
     //Load form to create filter query
     @RequestMapping(value = "/create", method = RequestMethod.GET)
@@ -38,8 +32,7 @@ public class PaymentsFilterController {
      * @return Return this form if filter is invalid or redirect to controller that make a request to database
      */
     @RequestMapping(value = "/create", method = RequestMethod.POST)
-    public String createFilter(@Valid FilterForm filterForm, BindingResult bindingResult, HttpSession session,
-                           @RequestParam(value = "responseType", required = false, defaultValue = "json") String responseType){
+    public String createFilter(@Valid FilterForm filterForm, BindingResult bindingResult, HttpSession session){
 
         if (bindingResult.hasErrors()){
             return "create_filter";
@@ -51,7 +44,7 @@ public class PaymentsFilterController {
         filter.setSourceAccount(filterForm.getSourceAccount());
         filter.setDestinationAccount(filterForm.getDestinationAccount());
         session.setAttribute("filter", filter);
-        return "redirect:/view/filters/request?responseType="+responseType;
+        return "redirect:/view/filters/request";
     }
 
     /**
@@ -59,10 +52,17 @@ public class PaymentsFilterController {
      */
     @RequestMapping(value = "/request", method = RequestMethod.GET)
     @ResponseBody
-    public ResponseEntity<?> createFilter(HttpSession session,
-                                  @RequestParam("responseType") String responseType){
+    public ResponseEntity<Object> createFilter(HttpSession session){
         FilterPaymentsRequest filter = (FilterPaymentsRequest) session.getAttribute("filter");
         session.removeAttribute("filter");
-        return service.filterPayments(filter, responseType);
+
+        HttpHeaders requestHeaders = new HttpHeaders();
+        HttpEntity<FilterPaymentsRequest> requestEntity = new HttpEntity<>(filter, requestHeaders);
+
+        RestTemplate template = new RestTemplate();
+        template.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+
+        ResponseEntity<Object> responseEntity = template.exchange("http://localhost:9966//rest/v1/journal/json", HttpMethod.POST, requestEntity, Object.class);
+        return responseEntity;
     }
 }
